@@ -1,0 +1,25 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "cmd",
+    srcs = [
+        "build_cert.go",
+        "build_config.go",
+        "generate_license.go",
+        "root.go",
+        "run_server.go",
+    ],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker/cmd",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/cert",
+        "//internal/config",
+        "//internal/license",
+        "//internal/util",
+        "//server",
+        "//server/config",
+        "@com_github_dromara_carbon_v2//:go_default_library",
+        "@com_github_lovesasuna_sync//coroutinegroup:go_default_library",
+        "@com_github_spf13_cobra//:go_default_library",
+    ],
+)

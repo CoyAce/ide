@@ -1,0 +1,23 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "handler",
+    srcs = [
+        "base.go",
+        "config.go",
+        "license.go",
+        "obtain_ticket.go",
+        "ping.go",
+        "release_ticket.go",
+    ],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker/server/handler",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//internal/cert",
+        "//internal/config",
+        "//internal/license",
+        "//internal/util",
+        "//server/config",
+        "@com_github_gin_gonic_gin//:go_default_library",
+    ],
+)

@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "router",
+    srcs = ["router.go"],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker/server/router",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//server/handler",
+        "@com_github_gin_gonic_gin//:go_default_library",
+    ],
+)

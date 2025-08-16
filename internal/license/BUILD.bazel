@@ -1,0 +1,16 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "license",
+    srcs = [
+        "code.go",
+        "license.go",
+    ],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker/internal/license",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/cert",
+        "@com_github_dromara_carbon_v2//:go_default_library",
+        "@com_github_lovesasuna_sync//coroutinegroup:go_default_library",
+    ],
+)

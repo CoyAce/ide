@@ -1,0 +1,14 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "server",
+    srcs = ["server.go"],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker/server",
+    visibility = ["//visibility:public"],
+    deps = [
+        "//server/config",
+        "//server/middleware",
+        "//server/router",
+        "@com_github_gin_gonic_gin//:go_default_library",
+    ],
+)

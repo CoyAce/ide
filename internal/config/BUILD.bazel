@@ -1,0 +1,12 @@
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "config",
+    srcs = ["config.go"],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker/internal/config",
+    visibility = ["//:__subpackages__"],
+    deps = [
+        "//internal/algo",
+        "//internal/cert",
+    ],
+)

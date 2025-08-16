@@ -1,0 +1,17 @@
+load("@rules_go//go:def.bzl", "go_binary", "go_library")
+
+# gazelle:prefix github.com/LovesAsuna/jetbrains_hacker
+
+go_library(
+    name = "jetbrains_hacker_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/LovesAsuna/jetbrains_hacker",
+    visibility = ["//visibility:private"],
+    deps = ["//cmd"],
+)
+
+go_binary(
+    name = "jetbrains_hacker",
+    embed = [":jetbrains_hacker_lib"],
+    visibility = ["//visibility:public"],
+)
