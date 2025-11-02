@@ -68,7 +68,7 @@
         <p class="block md:my-[1em] mx-0 break-words md:max-w-[50%]">
             Download <a
                 class="text-(--accent) no-underline"
-                href="https://gitee.com/ja-netfilter/ja-netfilter/releases/download/2022.2.0/ja-netfilter-2022.2.0.zip"
+                href="https://gitee.com/ja-netfilter/ja-netfilter/releases/download/2025.3.0/ja-netfilter-2025.3.0.zip"
                 title="Download jetbra first">jetbra.zip</a>, and configure as described in
             <strong>readme.txt</strong>! For testing purposes only, not for
             commercial use! <br>
