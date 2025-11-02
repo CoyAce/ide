@@ -15,7 +15,7 @@
     <ul>
         <li>
             <p>
-                <a href='https://github.com/LovesAsuna/jetbrains_hacker'><span>How to run a license server</span></a>
+                <a href='https://github.com/LovesAsuna/jb_helper'><span>How to run a license server</span></a>
             </p>
         </li>
         <li>
