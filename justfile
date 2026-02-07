@@ -3,7 +3,7 @@ default: backend frontend caddy
 
 caddy:
     mkdir -p /var/log/caddy
-    wget -q -O /usr/local/bin/caddy "https://caddyserver.com/api/download?os=linux&arch=amd64" && chmod +x /usr/local/bin/caddy
+    curl -o /usr/local/bin/caddy "https://caddyserver.com/api/download?os=linux&arch=amd64" && chmod +x /usr/local/bin/caddy
 
 frontend:
     just frontend/
