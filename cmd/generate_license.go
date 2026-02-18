@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"reflect"
 	"strings"
 
 	"github.com/LovesAsuna/jetbrains_hacker/internal/cert"
@@ -21,7 +22,7 @@ var generateLicenseCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		licenseId := cmd.Flag("licenseId").Value.String()
 		codes := strings.Split(cmd.Flag("codes").Value.String(), ",")
-		if len(codes) == 0 {
+		if reflect.DeepEqual(codes, []string{""}) {
 			var err error
 			codes, err = getCodes()
 			if err != nil {
