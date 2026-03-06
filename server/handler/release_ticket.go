@@ -39,7 +39,7 @@ func NewReleaseTicketResponse(context *gin.Context) (*ReleaseTicketResponse, err
 	serverLease := "4102415999000:" + serverUid
 
 	return &ReleaseTicketResponse{
-		Helper:             nil,
+		Helper:             helper,
 		Action:             "NONE",
 		ConfirmationStamp:  helper.GenerateConfirmationStamp(baseRequest.MachineId),
 		LeaseSignature:     helper.GenerateLeaseSignature(serverLease),
