@@ -5,6 +5,7 @@ on:
     branches:
       - 'main'
       - 'master'
+      - 'dev'
 
 jobs:
   build:
@@ -16,13 +17,13 @@ jobs:
         include:
           - os: ubuntu-latest
             platform: linux
-            binary_name: jetbrain-hacker_${{ github.ref_name }}_linux_amd64
+            binary_name: jetbrains_hacker_${{ github.ref_name }}_linux_amd64
           - os: windows-latest
             platform: windows
-            binary_name: jetbrain-hacker_${{ github.ref_name }}_windows_amd64.exe
+            binary_name: jetbrains_hacker_${{ github.ref_name }}_windows_amd64.exe
           - os: macos-latest
             platform: macos
-            binary_name: jetbrain-hacker_${{ github.ref_name }}_darwin_amd64
+            binary_name: jetbrains_hacker_${{ github.ref_name }}_darwin_amd64
 
     steps:
       - name: Checkout code

@@ -66,7 +66,7 @@ Binaries available for:
 
 #### Linux
 
-- jetbrain-hacker_linux_amd64 (linux musl statically linked)
+- jetbrains_hacker_linux_amd64 (linux musl statically linked)
 - jetbrains_hacker-linux-aarch64.tar.gz (linux on 64 bit arm)
 
 All contain a single binary file
@@ -74,11 +74,11 @@ All contain a single binary file
 #### macOS
 
 - jetbrains_hacker-mac.tar.gz (arm64)
-- jetbrain-hacker_darwin_amd64 (intel x86)
+- jetbrains_hacker_darwin_amd64 (intel x86)
 
 #### Windows
 
-- jetbrain-hacker_windows_amd64.exe (single 64bit binary)
+- jetbrains_hacker_windows_amd64.exe (single 64bit binary)
 
 ## Build
 
