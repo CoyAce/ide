@@ -9,8 +9,8 @@ frontend:
     just frontend/
 
 backend: build_backend
-    ./jetbrains_hacker run-server --addr :8080 &
+    bazel run //:jetbrains_hacker -- run-server --addr :8080 &
 
 build_backend:
-    go mod tidy
-    go build -v -o jetbrains_hacker
+    bazel build //:jetbrains_hacker
+
