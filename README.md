@@ -37,7 +37,7 @@ I create it to activate my common IDEs, and hope that it can be useful to others
 
 1. Run `jetbrains_hacker build-cert` to build needed certificates.
 2. Run `jetbrains_hacker build-config --type {power|url|dns}` to generate the corresponding configurations. Then copy the generated configurations into your `ja-netfilter` configuration files.
-3. Run `jetbrains_hacker generate-license --licenseId ${licenseId} --name ${name} --user ${user} --email ${email} --time {2999-01-02}`. Or simplest of all, you can just use `jetbrain_hacker generate-license`.
+3. Run `jetbrains_hacker generate-license --licenseId ${licenseId} --name ${name} --user ${user} --email ${email} --time {2999-01-02}`. Or simplest of all, you can just use `jetbrains_hacker generate-license`.
 4. Use the activation code in the `Activation Code` window.
 5. Don't care about the activation time, it is a fallback license and will not expire.
 
