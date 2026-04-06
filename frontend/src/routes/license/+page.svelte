@@ -1,7 +1,10 @@
 <script lang="ts">
+    import {onMount, tick} from 'svelte';
     import type {Product} from "./+page";
     import JbIcon from './icon.svelte'
     import '$lib/tailwind.css'
+
+    type ThemeMode = 'light' | 'dark';
 
     let {data} = $props();
     let productSources: Array<Product> = $state([]);
@@ -12,14 +15,13 @@
         });
     })
 
-    // State for the new drawer
     let isDrawerOpen: boolean = $state(false);
     let licenseId: string = $state("default");
     let name: string = $state("name");
     let user: string = $state("user");
     let email: string = $state("i@user.com");
+    let themeMode: ThemeMode = $state('light');
 
-    let drawerTimeoutId: number | undefined = $state(undefined);
     let headerHeight: number | undefined = $state(0);
     let headerRef: HTMLHeadElement | undefined = $state(undefined);
     $effect(() => {
@@ -31,7 +33,21 @@
         ).join('');
     });
 
-    // Original functions
+    onMount(() => {
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            themeMode = 'dark';
+        }
+    });
+
+    function toggleDrawer() {
+        isDrawerOpen = !isDrawerOpen;
+    }
+
+    async function toggleTheme() {
+        themeMode = themeMode === 'dark' ? 'light' : 'dark';
+        await tick();
+    }
+
     function filterSources(family: Array<string>) {
         productSources = data.products.filter((product) => {
             return family.includes(product.productFamilyName);
@@ -62,7 +78,7 @@
 <!-- svelte-ignore a11y_invalid_attribute -->
 <JbIcon filter={filterSources}/>
 
-<div class="flex flex-col min-h-screen" id="container">
+<div class:theme-dark={themeMode === 'dark'} class="flex flex-col min-h-screen theme-shell" id="container">
     <header bind:this={headerRef} class="sticky top-[2.3%] bg-(--card-bg) text-(--text-main) z-50 w-[80%] mx-auto shadow-[0_8px_40px_-12px_rgba(0,0,0,0.3)] transition-all duration-250 ease-in-out hover:translate-y-[2px] hover:shadow-[0_4px_20px_0_rgba(0,0,0,0.12)] flex flex-col md:flex-row items-start md:items-center md:justify-between px-6 py-3
                                         {isDrawerOpen ? 'rounded-t-[16px] rounded-b-none' : 'rounded-[16px]'}">
         <p class="block md:my-[1em] mx-0 break-words md:max-w-[50%]">
@@ -75,99 +91,113 @@
             <strong>Please note that this is just a personal page, not an official website!</strong>
         </p>
 
-        <!-- 右侧搜索区域 -->
-        <div class="flex items-center gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0">
-            <!-- 搜索输入框 -->
-            <div class="search-container flex items-center flex-grow sm:flex-grow-0">
-                <input
-                        type="text"
-                        placeholder="Search products..."
-                        bind:value={filterInput}
-                        class="rounded-(--radius) border border-(--border-color) bg-transparent py-2 px-4 outline-none focus:border-(--accent) transition-all duration-250 text-(--text-main) w-[180px]"
-                />
+        <div class="header-actions flex flex-col items-center gap-3 w-full md:w-auto shrink-0 mt-4 md:mt-0 md:flex-row md:justify-end md:self-start">
+            <button
+                    type="button"
+                    class="theme-toggle"
+                    aria-label={themeMode === 'dark' ? '切换到亮色模式' : '切换到暗黑模式'}
+                    title={themeMode === 'dark' ? '切换到亮色模式' : '切换到暗黑模式'}
+                    onclick={toggleTheme}
+            >
+                {#if themeMode === 'dark'}
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-toggle-icon">
+                        <circle cx="12" cy="12" r="4.5" fill="currentColor"></circle>
+                        <path d="M12 2.5v2.5M12 19v2.5M21.5 12H19M5 12H2.5M18.72 5.28l-1.77 1.77M7.05 16.95l-1.77 1.77M18.72 18.72l-1.77-1.77M7.05 7.05 5.28 5.28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    </svg>
+                {:else}
+                    <svg viewBox="0 0 24 24" aria-hidden="true" class="theme-toggle-icon">
+                        <path d="M20.2 14.2A8.8 8.8 0 0 1 9.8 3.8a0.4 0.4 0 0 0-.56-.46A9.7 9.7 0 1 0 20.66 14.76a0.4 0.4 0 0 0-.46-.56Z" fill="currentColor"></path>
+                    </svg>
+                {/if}
+            </button>
+
+            <div class="flex flex-col items-center gap-3 w-full md:w-auto shrink-0 md:flex-row md:justify-end">
                 <button
-                        class="ml-2 p-2 rounded-(--radius) bg-(--accent) text-white hover:opacity-90 transition-opacity duration-250"
-                        onclick={() => filterInput = ''}
-                        aria-label="Clear search"
-                        style="display: {filterInput ? 'block' : 'none'}"
+                        type="button"
+                        class="drawer-toggle flex items-center justify-between gap-3 min-w-[220px] rounded-[14px] border border-[var(--mui-outline)] bg-[var(--mui-surface)] px-4 py-3 text-left text-[var(--text-main)] shadow-[0_1px_2px_rgba(0,0,0,0.08)] transition-all duration-200 hover:bg-[var(--mui-surface-hover)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.12)]"
+                        aria-expanded={isDrawerOpen}
+                        aria-controls="license-drawer"
+                        onclick={toggleDrawer}
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18"></line>
-                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    <span class="flex flex-col leading-tight">
+                        <span class="text-xs uppercase tracking-[0.08em] text-[var(--text-grey)]">License config</span>
+                        <span class="text-sm font-medium">{isDrawerOpen ? 'Hide fields' : 'Show fields'}</span>
+                    </span>
+                    <svg
+                            class={`h-5 w-5 shrink-0 text-[var(--text-grey)] transition-transform duration-200 ${isDrawerOpen ? 'rotate-180' : ''}`}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                    >
+                        <path d="m6 9 6 6 6-6"></path>
                     </svg>
                 </button>
-            </div>
 
-            <!-- 搜索结果统计信息 -->
-            <div class="text-(--text-grey) text-sm whitespace-nowrap">
-                {productList.length}/{productSources.length}
-                {#if filterInput}
-                    <span class="ml-1 text-(--accent) font-medium hidden md:inline">"{filterInput}"</span>
-                {/if}
+                <div class="flex items-center gap-3 w-full md:w-auto shrink-0">
+                    <div class="search-container flex items-center flex-grow sm:flex-grow-0">
+                        <input
+                                type="text"
+                                placeholder="Search products..."
+                                bind:value={filterInput}
+                                class="rounded-(--radius) border border-(--border-color) bg-transparent py-2 px-4 outline-none focus:border-(--accent) transition-all duration-250 text-(--text-main) w-[180px]"
+                        />
+                        <button
+                                class="ml-2 p-2 rounded-(--radius) bg-(--accent) text-white hover:opacity-90 transition-opacity duration-250"
+                                onclick={() => filterInput = ''}
+                                aria-label="Clear search"
+                                style="display: {filterInput ? 'block' : 'none'}"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="18" y1="6" x2="6" y2="18"></line>
+                                <line x1="6" y1="6" x2="18" y2="18"></line>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="text-(--text-grey) text-sm whitespace-nowrap">
+                        {productList.length}/{productSources.length}
+                        {#if filterInput}
+                            <span class="ml-1 text-(--accent) font-medium hidden md:inline">"{filterInput}"</span>
+                        {/if}
+                    </div>
+                </div>
             </div>
         </div>
+
     </header>
 
-    <!-- Drawer System Container -->
     <div class="sticky w-[80%] mx-auto z-40 top-[calc(2.3%+var(--header-height))]"
-         onmouseenter={
-            () => {
-                if (drawerTimeoutId) {
-                    clearTimeout(drawerTimeoutId)
-                }
-                isDrawerOpen = true;
-            }
-        }
-         onmouseleave={
-            () => {
-                drawerTimeoutId = setTimeout(() => {
-                    isDrawerOpen = false;
-                }, 300);
-            }
-        }
          style="--header-height: {headerHeight}px"
     >
-        <!-- Trigger Area: Visually connects to header, contains handle or line -->
-        <div class="flex flex-col items-center cursor-pointer pt-1">
-            <!-- Inverted Trapezoid Handle (Drawer Pull) -->
-            {#if !isDrawerOpen}
-                <div
-                        class="relative w-12 h-4 bg-gray-300 dark:bg-gray-700 hover:bg-gray-400 dark:hover:bg-gray-600 transition-colors flex justify-center items-center"
-                        style="clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);"
-                        aria-label="Open filters drawer"
-                        role="button"
-                >
-                    <!-- Small horizontal line in the middle -->
-                    <div class="w-4 h-0.5 bg-gray-500 dark:bg-gray-400 rounded-full"></div>
-                </div>
-            {/if}
-            <!-- Connecting Line (shown when drawer is open) -->
-            {#if isDrawerOpen}
-                <div class="w-px h-4 bg-gray-400 dark:bg-gray-500"></div>
-            {/if}
-        </div>
-
-        <!-- Dropdown Panel -->
         <div
-                class="bg-[var(--card-bg)] text-[var(--text-main)] shadow-xl rounded-b-[16px]
-               transition-[max-height,opacity] duration-300 ease-in-out overflow-hidden
-               {isDrawerOpen ?
-                    'max-h-[450px] opacity-100' :
-                    'max-h-0 opacity-0 border border-transparent'}"
-                style="margin-top: {isDrawerOpen && headerHeight > 0 ? '-1px' : '0'}"
+                id="license-drawer"
+                class={`drawer-panel overflow-hidden rounded-[20px] border border-[var(--mui-outline)] bg-[var(--mui-surface)] text-[var(--text-main)] shadow-[0_12px_32px_rgba(15,23,42,0.12)] transition-all duration-250 ease-out ${isDrawerOpen ? 'mt-3 max-h-[320px] opacity-100' : 'mt-0 max-h-0 opacity-0 border-transparent shadow-none'}`}
         >
-            <div class="px-12 py-10 grid grid-cols-2 gap-x-6 gap-y-4
-                        transition-opacity duration-300 ease-in-out
-                        {isDrawerOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}"
-            >
-                <input type="text" bind:value={licenseId} placeholder="License Id"
-                       class="block w-full p-2 border rounded-[var(--radius)] border-[var(--border-color)] focus:border-[var(--accent)] text-[var(--text-main)] placeholder:text-[var(--text-grey)]">
-                <input type="text" bind:value={name} placeholder="Name"
-                       class="block w-full p-2 border rounded-[var(--radius)] border-[var(--border-color)] focus:border-[var(--accent)] text-[var(--text-main)] placeholder:text-[var(--text-grey)]">
-                <input type="text" bind:value={user} placeholder="User"
-                       class="block w-full p-2 border rounded-[var(--radius)] border-[var(--border-color)] focus:border-[var(--accent)] text-[var(--text-main)] placeholder:text-[var(--text-grey)]">
-                <input type="text" bind:value={email} placeholder="Email"
-                       class="block w-full p-2 border rounded-[var(--radius)] border-[var(--border-color)] focus:border-[var(--accent)] text-[var(--text-main)] placeholder:text-[var(--text-grey)]">
+            <div class={`grid grid-cols-1 gap-4 px-6 py-6 md:grid-cols-2 transition-opacity duration-200 ${isDrawerOpen ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+                <label class="field-group">
+                    <span class="field-label">License Id</span>
+                    <input type="text" bind:value={licenseId} placeholder="License Id"
+                           class="field-input">
+                </label>
+                <label class="field-group">
+                    <span class="field-label">Name</span>
+                    <input type="text" bind:value={name} placeholder="Name"
+                           class="field-input">
+                </label>
+                <label class="field-group">
+                    <span class="field-label">User</span>
+                    <input type="text" bind:value={user} placeholder="User"
+                           class="field-input">
+                </label>
+                <label class="field-group">
+                    <span class="field-label">Email</span>
+                    <input type="text" bind:value={email} placeholder="Email"
+                           class="field-input">
+                </label>
             </div>
         </div>
     </div>
@@ -177,10 +207,9 @@
           style="--space: 20rem; --gutter: 3.5rem">
         {#each productList as product}
             <article
-                    class="group shadow-lg rounded-2xl transition-all duration-400 ease-in-out w-[90%] relative overflow-visible bg-(--card-bg) mx-auto hover:-translate-y-0.5"
+                    class="group shadow-lg rounded-2xl transition-[background-color,color,box-shadow,transform] duration-300 ease-in-out w-[90%] relative overflow-visible bg-(--card-bg) mx-auto hover:-translate-y-0.5"
                     data-sequence={product.Code}>
-                <header>
-                    <div class="flex items-center justify-between px-6 pt-(--spacing) pb-0 bg-(--card-bg) rounded-(--radius)">
+                <header class="card-header px-6 pt-(--spacing) pb-0">
                         <div class="relative w-(--size) h-(--size) text-[1.25rem] select-none translate-y-1/2 flex items-center justify-center overflow-hidden shrink-0">
                             <svg class="w-full h-full m-0 bg-card-bg text-transparent object-cover text-center text-indent-10000"
                                  role="img">
@@ -198,10 +227,8 @@
                                 </li>
                             </ul>
                         </button>
-                    </div>
-                    <hr class="m-0 p-0 bg-(--border-color) h-[1px] border-none"/>
                 </header>
-                <div class="p-6 overflow-hidden bg-(--card-bg) pt-10 rounded-(--radius)">
+                <div class="card-body p-6 overflow-hidden pt-10">
                     <h1 class="line-clamp-1 text-(--text-main) mt-0 text-ellipsis font-bold text-[2em] my-[0.67em]"
                         title={product.name}>{product.name}</h1>
                     <p title="Click to copy full license text" class="
@@ -240,20 +267,30 @@
         --card-bg: #fff;
         --hover-color: #eee;
         --border-color: rgba(0, 0, 0, 0.5);
+        --mui-surface: #ffffff;
+        --mui-surface-hover: #f8faff;
+        --mui-outline: rgba(25, 118, 210, 0.18);
+        --mui-outline-strong: rgba(25, 118, 210, 0.5);
+        --theme-gradient-start: radial-gradient(circle at top right, rgba(255, 255, 255, 0.98) 0%, rgba(240, 244, 255, 0.94) 26%, rgba(255, 255, 255, 0) 64%);
+        --theme-gradient-end: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(245, 248, 255, 0.85) 100%);
         --grey-400: rgba(0, 0, 0, 0.04);
         --grey-600: rgba(0, 0, 0, 0.06);
     }
 
-    @media (prefers-color-scheme: dark) {
-        :root {
-            --main-bg: rgb(0, 0, 0);
-            --card-bg: rgb(31, 34, 38);
-            --text-main: #d9d9d9;
-            --text-grey: #6e767d;
-            --accent: #1d9bf0;
-            --hover-color: rgba(255, 255, 255, 0.07);
-            --border-color: #4b4648;
-        }
+    .theme-dark {
+        --main-bg: rgb(0, 0, 0);
+        --card-bg: rgb(31, 34, 38);
+        --text-main: #d9d9d9;
+        --text-grey: #6e767d;
+        --accent: #1d9bf0;
+        --hover-color: rgba(255, 255, 255, 0.07);
+        --border-color: #4b4648;
+        --mui-surface: rgb(31, 34, 38);
+        --mui-surface-hover: rgb(40, 44, 49);
+        --mui-outline: rgba(29, 155, 240, 0.28);
+        --mui-outline-strong: rgba(29, 155, 240, 0.58);
+        --theme-gradient-start: radial-gradient(circle at top right, rgba(38, 45, 58, 0.98) 0%, rgba(21, 24, 29, 0.94) 28%, rgba(10, 10, 10, 0) 64%);
+        --theme-gradient-end: linear-gradient(135deg, rgba(10, 10, 10, 0.05) 0%, rgba(10, 10, 10, 0.88) 100%);
     }
 
     #container {
@@ -266,5 +303,111 @@
         padding: 0;
         -webkit-font-smoothing: antialiased;
         background-color: var(--main-bg);
+        color: var(--text-main);
+        transition: background-color 0.3s ease, color 0.3s ease;
+        position: relative;
+        isolation: isolate;
+    }
+
+    .theme-shell {
+        min-height: 100vh;
+    }
+
+    .card-header,
+    .card-body {
+        background-color: var(--card-bg);
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--border-color);
+        border-top-left-radius: var(--radius);
+        border-top-right-radius: var(--radius);
+        transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+    }
+
+    .card-body {
+        border-bottom-left-radius: var(--radius);
+        border-bottom-right-radius: var(--radius);
+    }
+
+    .header-actions {
+        position: relative;
+    }
+
+    .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 9999px;
+        border: 1px solid var(--mui-outline);
+        background: var(--mui-surface);
+        color: var(--text-main);
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.14);
+        transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+        flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+        transform: translateY(-1px);
+        background: var(--mui-surface-hover);
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.18);
+    }
+
+    .theme-toggle:focus-visible {
+        outline: none;
+        border-color: var(--mui-outline-strong);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent), 0 14px 28px rgba(15, 23, 42, 0.18);
+    }
+
+    .theme-toggle-icon {
+        width: 1.35rem;
+        height: 1.35rem;
+    }
+
+    .drawer-toggle:focus-visible {
+        outline: none;
+        border-color: var(--mui-outline-strong);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 18%, transparent);
+    }
+
+    .field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .field-label {
+        font-size: 0.75rem;
+        line-height: 1rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        color: var(--text-grey);
+    }
+
+    .field-input {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--mui-outline);
+        background: transparent;
+        padding: 0.875rem 1rem;
+        color: var(--text-main);
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    }
+
+    .field-input::placeholder {
+        color: var(--text-grey);
+    }
+
+    .field-input:focus {
+        outline: none;
+        border-color: var(--mui-outline-strong);
+        background: color-mix(in srgb, var(--mui-surface) 92%, var(--accent) 8%);
+        box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);
     }
 </style>
